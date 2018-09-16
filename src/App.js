@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import './components/app/app.css';
 
+import { withScriptjs, withGoogleMap, GoogleMap } from "react-google-maps";
+import GoogleMapReact from "google-map-react";
+
 class App extends Component {
 
   constructor(props) {
@@ -64,8 +67,8 @@ class App extends Component {
     route = this.state.routeNumber;
 
     //variables
-    apiLink = 'https://data.smartdublin.ie/cgi-bin/rtpi/routeinformation?routeid='+ route +'&format=json';
-    apiLink = '/api/routeinformation.json';
+    apiLink = 'https://data.smartdublin.ie/cgi-bin/rtpi/routeinformation?routeid='+ route +'&operator=bac&format=json';
+   // apiLink = '/api/routeinformation.json';
 
     //set loading 
     this.setState({ isLoading:true });
