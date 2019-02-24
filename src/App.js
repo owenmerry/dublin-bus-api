@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 import './components/app/app.css';
 
-import { withScriptjs, withGoogleMap, GoogleMap } from "react-google-maps";
-import GoogleMapReact from "google-map-react";
+
+
+// components
+import BusLocation from './components/BusLocation/busLocation.js';
+
+
+
 
 class App extends Component {
 
@@ -37,6 +42,7 @@ class App extends Component {
     //get data
     this.refreshData();
     this.refreshRouteData();
+  
   }
 
   refreshData(stop = ''){
@@ -56,7 +62,13 @@ class App extends Component {
     //get data
     fetch(apiLink)
       .then(response => response.json())
-      .then(data => this.setState({ data,buses:data.results,isLoading:false }));
+      .then(data => {
+        this.setState({ data,buses:data.results,isLoading:false });
+        return data;
+      })
+      .then(data => console.log('get stop data:', data))
+
+
 
   }
 
@@ -65,10 +77,11 @@ class App extends Component {
     //defaults
     var apiLink = "";
     route = this.state.routeNumber;
+    //stopReal = {};
 
     //variables
-    apiLink = 'https://data.smartdublin.ie/cgi-bin/rtpi/routeinformation?routeid='+ route +'&operator=bac&format=json';
-   // apiLink = '/api/routeinformation.json';
+    //apiLink = 'https://data.smartdublin.ie/cgi-bin/rtpi/routeinformation?routeid='+ route +'&operator=bac&format=json';
+    apiLink = '/api/routeinformation.json';
 
     //set loading 
     this.setState({ isLoading:true });
@@ -77,7 +90,32 @@ class App extends Component {
     //get data
     fetch(apiLink)
       .then(response => response.json())
-      .then(dataRoute => this.setState({ dataRoute,isLoading:false }));
+      .then(dataRoute => {
+        this.setState({ dataRoute,isLoading:false });
+        return dataRoute;
+      })
+      .then(dataRoute => {
+        console.log('get route data:', dataRoute);
+        return dataRoute;
+      })
+      .then(dataRoute => {
+       // console.log('data',dataRoute);
+        dataRoute.results.forEach( function(route) {
+          //console.log('run this',route);
+          route.stops.forEach( function(stop) {
+
+
+
+
+            console.log('stop',stop.stopid);
+
+          }); 
+
+        }); 
+
+        //this.setState({ stopReal: {} });
+
+        });
 
   }
 
@@ -117,6 +155,29 @@ class App extends Component {
   }
 
 
+  // fetch
+
+  fetchStopRealTime(stopid = ''){
+
+    //defaults
+    var apiLink = "";
+
+    //variables
+    apiLink = 'https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid='+ stopid +'&format=json';
+    
+    //get data
+    // return fetch(apiLink)
+    //   .then(response => response.json());
+
+    //this.setState({ stopid: 'got data' });
+    console.log('get data');
+
+    //return 'get data';
+  }
+
+
+
+
   render() {
 
     //if loading
@@ -150,12 +211,18 @@ class App extends Component {
         <h1>Route details:</h1>
         <div>Route Number: <input type="text" value={this.state.routeNumber} onChange={this.changeRoute} onKeyPress={this.enterRoute} /></div>
         Stops:
-        {this.state.dataRoute.results.map(bus =>
+        { (this.state.dataRoute.results || []).map(bus =>
             <div key={bus.destination}>
-              <div>Route:{bus.route} - {bus.destination} - time:{bus.duetime}</div>
+              <div>Route:{bus.route} : {bus.origin} => {bus.destination}</div>
+              { (bus.stops || []).map(stop =>
+                <div key={stop.stopid}>
+                  <div>Name:<a target='_blank' href={`http://google.com/maps/?q=${stop.latitude},${stop.longitude}`}>{stop.fullname}</a> ({stop.stopid}) <BusLocation stopid={stop.stopid} /></div>
+                </div>
+              )} 
+
             <hr />
             </div>
-          )}
+          )} 
 
       <div id="map"></div>
 
