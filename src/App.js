@@ -211,7 +211,7 @@ class App extends Component {
         <h1>Route details:</h1>
         <div>Route Number: <input type="text" value={this.state.routeNumber} onChange={this.changeRoute} onKeyPress={this.enterRoute} /></div>
         Stops:
-        { (this.state.dataRoute.results || []).map(bus =>
+        { (this.state.dataRoute.results || []).filter(bus => (bus.origin === 'Thormanby Road') ).map(bus =>
             <div key={bus.destination}>
               <div>Route:{bus.route} : {bus.origin} => {bus.destination}</div>
               { (bus.stops || []).map(stop =>
