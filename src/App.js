@@ -182,7 +182,7 @@ class App extends Component {
 
     //if loading
     if (this.state.isLoading) {
-      return <p>Loading ...</p>;
+      return <p>Loading Bus Info...</p>;
     }
 
     //return styles
